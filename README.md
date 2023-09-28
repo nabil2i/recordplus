@@ -2,7 +2,7 @@
 The project is a REST API using pythondjango to consume endpoints by a google chrome screen recorder extension.
 
 ## Use the API
-It is deployed at [https://recordplus.onrender.com/api/](https://hngx-hiqu.onrender.com/api)
+It is deployed at [https://recordplus.onrender.com/api/](https://recordplus.onrender.com/api/)
 
 ```
 BASE URL: recordplus.onrender.com/api/
