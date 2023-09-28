@@ -1,13 +1,20 @@
-from rest_framework.response import Response
+# import os
+# import tempfile
+
+from django.core.exceptions import SuspiciousFileOperation
+from django.http import HttpResponse, StreamingHttpResponse
+from django.shortcuts import get_object_or_404
+# from moviepy.editor import VideoFileClip
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RecordedVideoSerializer
-from .models import RecordedVideo
 from rest_framework.viewsets import ModelViewSet
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+
+from .models import RecordedVideo
+from .serializers import RecordedVideoSerializer
+
 
 # Create your views here.
 class VideoViewSet(ModelViewSet):
@@ -22,15 +29,71 @@ class VideoViewSet(ModelViewSet):
     video = get_object_or_404(RecordedVideo, pk=pk)
     
     video_file_path = video.video_file.path
-    print(video_file_path)
+    # print("path: " + video_file_path)
+    
+    file_extension = video.video_file.name.split('.')[-1].lower()
+    # print("extension; " + file_extension)
+    
+    content_types = {
+            'mp4': 'video/mp4',
+            'webm': 'video/webm',
+            'avi': 'video/x-msvideo',
+        }
+    content_type = content_types.get(file_extension, 'video/mp4')
     
     try:
-      with open(video_file_path, 'rb') as video_file:
-        response = HttpResponse(video_file.read(), content_type='video/mp4')
-        response['Content-Disposition'] = f'inline; filename="{video_file_path}"'
-        return response
+      def file_iterator(file_path, chunk_size=8192):
+        with open(file_path, 'rb') as video_file:
+            while True:
+                chunk = video_file.read(chunk_size)
+                if not chunk:
+                    break
+                yield chunk
+
+      response = StreamingHttpResponse(file_iterator(video_file_path), content_type=content_type)
+      response['Content-Disposition'] = f'inline; filename="{video_file_path}"'
+      return response
+
+      # with open(video_file_path, 'rb') as video_file:
+      #   response = HttpResponse(video_file.read(), content_type=content_type)
+      #   response['Content-Disposition'] = f'inline; filename="{video_file_path}"'
+      #   return response
     except FileNotFoundError:
       return response({ 'message': 'Video not found'}, status=status.HTTP_404_NOT_FOUND)
+  
+  # def create(self, request, *args, **kwargs):
+  #   video_file = request.data.get('video_file', None)
+  #   if not video_file:
+  #     return Response({'message': 'No video file provided'}, status=status.HTTP_400_BAD_REQUEST)
+    
+  #   file_extension = video_file.name.split('.')[-1].lower()
+  #   print("create function: " + file_extension)
+  #   if file_extension not in ['mp4', 'webm', 'avi']:
+  #     return Response({'message': 'Video format not supported'}, status=status.HTTP_400_BAD_REQUEST)
+    
+  #   try:
+  #     with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{file_extension}') as temp_file:
+  #       for chunk in video_file.chunks():
+  #           temp_file.write(chunk)
+            
+  #       clip = VideoFileClip(temp_file.name)
+  #       compressed_clip = clip.resize(width=640)
+  #       compressed_clip.write_videofile(temp_file.name)
+  #       clip.close()
+  #       compressed_clip.close()
+
+  #     # Continue with validation and object creation
+  #     request.data['video_file'] = temp_file
+  #     serializer = RecordedVideoSerializer(data=request.data)
+
+  #     serializer.is_valid(raise_exception=True)
+  #     serializer.save()
+  #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+      
+  #   except Exception as e:
+  #     return Response({'message': f'Video optimization failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      
+      
       
       
 # class VideoDetail(APIView):  

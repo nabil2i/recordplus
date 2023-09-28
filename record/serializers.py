@@ -19,6 +19,9 @@ class RecordedVideoSerializer(serializers.ModelSerializer):
     title = data.get('title', '')
     video_file = data.get('video_file')
     
+    if not video_file:
+      raise serializers.ValidationError('Upload a video')
+    
     # file should be max 100MB
     max_size = 1024 * 1024 * 100  
     if video_file.size > max_size:

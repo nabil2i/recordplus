@@ -11,7 +11,7 @@ class RecordedVideo(models.Model):
   video_file = models.FileField(upload_to='record/videos/',
                                 validators=[
                                   validate_file_size,
-                                  FileExtensionValidator(allowed_extensions=['mp4', 'webm'])
+                                  FileExtensionValidator(allowed_extensions=['mp4', 'webm', 'avi'])
                                   ],
                                 blank=True)
   created_at = models.DateTimeField(auto_now_add=True)

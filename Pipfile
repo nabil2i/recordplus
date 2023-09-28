@@ -11,6 +11,7 @@ djangorestframework = "*"
 python-decouple = "*"
 whitenoise = "*"
 drf-nested-routers = "*"
+# moviepy = "*"
 
 [dev-packages]
 
