@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .vscode/
-staticfiles
+# staticfiles/
 # C extensions
 *.so
 
@@ -253,3 +253,5 @@ local_settings.py
 
 .env
 db.sqlite3
+.vscode/
+media/

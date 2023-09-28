@@ -10,6 +10,7 @@ gunicorn = "*"
 djangorestframework = "*"
 python-decouple = "*"
 whitenoise = "*"
+drf-nested-routers = "*"
 
 [dev-packages]
 
