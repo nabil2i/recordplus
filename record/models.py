@@ -13,7 +13,7 @@ class RecordedVideo(models.Model):
   def __str__(self):
     return self.title
 
-  def get_url(self):
+  def get_video_url(self):
     if (self.video_file):
       return 'http://127.0.0.1:8000' + self.video_file._url
     return ''
