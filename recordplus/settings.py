@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -44,6 +45,9 @@ INSTALLED_APPS = [
     # 3rd party apps
     'rest_framework',
     'whitenoise.runserver_nostatic',
+    
+    # my apps
+    'record',
     
 ]
 
