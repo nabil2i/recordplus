@@ -20,6 +20,7 @@ Parameters:
 ```
 title: string, maxLength(255)
 description: string
+video_file: File
 ```
 
 Response: `Code: 201`
