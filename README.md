@@ -48,7 +48,7 @@ Response:
         "id": number,
         "title": string,
         "description": string
-        "video_file": string,
+        "video_file": string(url),
         "created_at": string(UTC time)
     },
 ]
@@ -65,7 +65,7 @@ Response:
         "id": number,
         "title": string,
         "description": string
-        "video_file": string,
+        "video_file": string(url),
         "created_at": string(UTC time)
     },
 ]
