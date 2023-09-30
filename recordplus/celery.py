@@ -11,3 +11,6 @@ celery = Celery('recordplus')
 # location of config variables
 celery.config_from_object('django.conf:settings', namespace='CELERY')
 celery.autodiscover_tasks()
+
+# CELERY_TASK_QUEUE = 'transcription_queue'
+

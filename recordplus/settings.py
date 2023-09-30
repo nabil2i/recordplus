@@ -17,6 +17,7 @@ from pathlib import Path
 # import cloudinary.uploader
 # import cloudinary.api
 from decouple import config
+import openai
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
+
+openai.api_key = config('OPENAI_API_KEY')
 
 # # CLOUDINARY configuration
 # CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME')
@@ -202,4 +205,4 @@ REST_FRAMEWORK = {
     # ],
 }
 
-CELERY_BROKER_URL = ''
+# CELERY_BROKER_URL = ''
