@@ -5,6 +5,7 @@ from django.core.exceptions import SuspiciousFileOperation
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 # from moviepy.editor import VideoFileClip
+from django.core.exceptions import SuspiciousFileOperation
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -14,15 +15,56 @@ from rest_framework.viewsets import ModelViewSet
 
 from .models import RecordedVideo
 from .serializers import RecordedVideoSerializer
+from .tasks import transcribe_video
 
 
 # Create your views here.
 class VideoViewSet(ModelViewSet):
   http_method_names = ['get', 'post']
-  
   queryset = RecordedVideo.objects.all()
   serializer_class = RecordedVideoSerializer
   parser_classes = (MultiPartParser, FormParser)
+  
+  def create(self, request, *args, **kwargs):
+    title = request.data.get('title')
+    description = request.data.get('description')
+    video_instance = RecordedVideo.objects.create(title=title, description=description)
+    
+    return Response({'video_id': video_instance.id}, status=status.HTTP_201_CREATED)
+  
+  @action(detail=False, methods=['PATCH'])
+  def update_video_file(self, request):
+    video_id = request.data.get('video_id')
+    video_chunck = request.FILES.get('video_chunck')
+    
+    if not video_id or not video_chunck:
+      return Response({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+    video_instance = get_object_or_404(RecordedVideo, pk=video_id)
+
+    try:
+      video_instance.video_file.save(video_chunck.name, video_chunck)
+      return Response({'message': 'Chunk uploaded successfully'}, status=status.HTTP_200_OK)
+    except SuspiciousFileOperation:
+      return Response({'message': 'Invalid file operation'}, status=status.HTTP_400_BAD_REQUEST)
+    
+  @action(detail=False, methods=['POST'])
+  def finalize_video_upload(self, request):
+    video_id = request.data.get('video_id')
+    
+    if not video_id:
+      return Response({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    video_instance = get_object_or_404(RecordedVideo, pk=video_id)
+    
+    transcribe_video.delay(video_instance.id)
+    
+    return Response({'message': 'Transcription task initiated'}, status=status.HTTP_200_OK)
+    
+    # serializer = self.get_serializer(data=request.data)
+    # serializer.is_valid(raise_exception=True)
+    # video_instance = serializer.save()
+    # transcribe_video.delay(video_instance.id)
+    # return Response(serializer.data, status=status.HTTP_201_CREATED)
   
   @action(detail=True, methods=['GET'])
   def stream_video(self, request, pk):
@@ -60,40 +102,7 @@ class VideoViewSet(ModelViewSet):
       #   return response
     except FileNotFoundError:
       return response({ 'message': 'Video not found'}, status=status.HTTP_404_NOT_FOUND)
-  
-  # def create(self, request, *args, **kwargs):
-  #   video_file = request.data.get('video_file', None)
-  #   if not video_file:
-  #     return Response({'message': 'No video file provided'}, status=status.HTTP_400_BAD_REQUEST)
-    
-  #   file_extension = video_file.name.split('.')[-1].lower()
-  #   print("create function: " + file_extension)
-  #   if file_extension not in ['mp4', 'webm', 'avi']:
-  #     return Response({'message': 'Video format not supported'}, status=status.HTTP_400_BAD_REQUEST)
-    
-  #   try:
-  #     with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{file_extension}') as temp_file:
-  #       for chunk in video_file.chunks():
-  #           temp_file.write(chunk)
-            
-  #       clip = VideoFileClip(temp_file.name)
-  #       compressed_clip = clip.resize(width=640)
-  #       compressed_clip.write_videofile(temp_file.name)
-  #       clip.close()
-  #       compressed_clip.close()
 
-  #     # Continue with validation and object creation
-  #     request.data['video_file'] = temp_file
-  #     serializer = RecordedVideoSerializer(data=request.data)
-
-  #     serializer.is_valid(raise_exception=True)
-  #     serializer.save()
-  #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-      
-  #   except Exception as e:
-  #     return Response({'message': f'Video optimization failed: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-      
-      
       
       
 # class VideoDetail(APIView):  
