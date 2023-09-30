@@ -23,3 +23,12 @@ class RecordedVideo(models.Model):
   #   if (self.video_file):
   #     return settings.BASE_URL + self.video_file.url
   #   return ''
+
+class Transcription(models.Model):
+  recorded_video = models.models.OneToOneField(RecordedVideo,
+                                               on_delete=models.CASCADE,
+                                               related_name='transcription')
+  transcription_text = models.models.TextField()
+  
+  def __str__(self):
+    return f"Transcription for video {self.recorded_video.title}"
