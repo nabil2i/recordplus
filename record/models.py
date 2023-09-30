@@ -10,7 +10,7 @@ class RecordedVideo(models.Model):
   # cloudinary_url = models.URLField()
   video_file = models.FileField(upload_to='record/videos/',
                                 validators=[
-                                  validate_file_size,
+                                  # validate_file_size,
                                   FileExtensionValidator(allowed_extensions=['mp4', 'webm', 'avi'])
                                   ],
                                 blank=True,
