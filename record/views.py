@@ -21,7 +21,7 @@ from .tasks import transcribe_video
 # Create your views here.
 class VideoViewSet(ModelViewSet):
   http_method_names = ['get', 'post']
-  queryset = RecordedVideo.objects.all()
+  queryset = RecordedVideo.objects.prefetch_related('transcription').all()
   serializer_class = RecordedVideoSerializer
   parser_classes = (MultiPartParser, FormParser)
   
