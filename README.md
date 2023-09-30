@@ -30,18 +30,18 @@ video_file: binary
 
 ```JSON
 
-    {"video_id": number}
+    {"video_id": "number"}
 
 ```
 
 * PHASE 2: Use the received video ID to send chuncks of your video
 
-*Endpoint:*  `PATCH`: ```/record/videos/{video_id}/update_video_chunck/```
+*Endpoint:*  `PATCH`: ```/record/videos/{video_id}/update_video_file/```
 
 *Parameters:*
 
 ```
-video_chunck: binary
+video_chunk: binary
 ```
 
 *Response:* `Code: 200`
@@ -105,16 +105,19 @@ Response:
 ```JSON
 [
     {
-        "id": number,
-        "title": string,
-        "description": string
-        "video_file": string(url),
-        "created_at": string(UTC time),
-        transcription: string
+        "id": "number",
+        "title": "string",
+        "description": "string"
+        "video_file": "string(url)",
+        "created_at": "string(UTC time)",
+        transcription: {
+            "id": "number",
+            "transcription_text": "string"
+        }
     },
 ]
 ```
-3. `GET`: ```/record/videos/{id}```
+3. `GET`: ```/record/videos/{video_id}/```
 
 Retrive a video
 
@@ -123,12 +126,15 @@ Response:
 ```JSON
 [
     {
-        "id": number,
-        "title": string,
-        "description": string
-        "video_file": string(url),
-        "created_at": string(UTC time),
-        transcription: string
+        "id": "number",
+        "title": "string",
+        "description": "string"
+        "video_file": "string(url)",
+        "created_at": "string(UTC time)",
+        transcription: {
+            "id": "number",
+            "transcription_text": "string"
+        }
     },
 ]
 ```

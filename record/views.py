@@ -1,4 +1,4 @@
-# import os
+import os
 import tempfile
 
 from django.core.exceptions import SuspiciousFileOperation
@@ -72,13 +72,17 @@ class VideoViewSet(ModelViewSet):
                                 #  method="compose",
                                 #  codec="libx264"
                                   )
-      temp_file.delete()
       # video_instance.video_file.save(video_chunk.name, video_chunk)
       return Response({'message': 'Chunk uploaded successfully'}, status=status.HTTP_200_OK)
     
     except SuspiciousFileOperation:
       return Response({'message': 'Invalid file operation'}, status=status.HTTP_400_BAD_REQUEST)
     
+    finally:
+      temp_file.close()
+      if temp_file.name:
+        os.remove(temp_file.name)
+
   @action(detail=True, methods=['POST'])
   def finalize_video_upload(self, request, pk):  
     if not pk:

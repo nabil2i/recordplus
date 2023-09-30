@@ -13,9 +13,10 @@ whitenoise = "*"
 drf-nested-routers = "*"
 # moviepy = "*"
 celery = "*"
-openai = "0.27.0"
 ffmpeg = "*"
 moviepy = "*"
+openai-whisper = "*"
+install = "*"
 
 [dev-packages]
 

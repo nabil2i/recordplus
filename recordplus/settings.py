@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'whitenoise.runserver_nostatic',
+    'drf_yasg',
     
     # my apps
     'record',
@@ -194,6 +195,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', 
     # 'COERCE_DECIMAL_TO_STRING': False,
     # 'PAGE_SIZE':10, # set locally
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', # set globally
@@ -205,4 +207,8 @@ REST_FRAMEWORK = {
     # ],
 }
 
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'RECORD PLUS',
+    
+# }
 # CELERY_BROKER_URL = ''

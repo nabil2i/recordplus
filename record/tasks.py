@@ -4,8 +4,8 @@ from celery import shared_task
 from time import sleep
 import openai
 from .models import RecordedVideo, Transcription
-from openai.error import OpenAIError
-
+# from openai.error import OpenAIError
+# import whisper
 
 @shared_task
 def transcribe_video(video_id):
@@ -23,19 +23,20 @@ def transcribe_video(video_id):
       
     with open(video_file_path, 'rb') as video_file:
       response = openai.Audio.transcribe("whisper-1", video_file)
-    
+      
+      # model = whisper.load_model("base")
+      # response = model.transcribe(video_file)
     # with open(video_file_path, 'rb') as video_file:
     #   response = openai.Transcription.create(
     #     audio=video_file,
     #     engine="whisper",
     #     language="en-US",
     #     max_tokens=300,
-    #   )
-      
-    print(response)
+    #   ) 
     
     if 'text' in response:
       transcription_text = response['text']
+      print(transcription_text)
     
       transcription, created = Transcription.objects.get_or_create(
         recorded_video=video,
@@ -53,7 +54,7 @@ def transcribe_video(video_id):
   
   except RecordedVideo.DoesNotExist:
     print(f"Video with ID {video_id} does not exist.")
-  except OpenAIError as e:
-    print(f"OpenAI Error: {str(e)}")
+  # except OpenAIError as e:
+  #   print(f"OpenAI Error: {str(e)}")
   except Exception as e:
     print(f"Error transcribing the video {video_id}: {str(e)}")
