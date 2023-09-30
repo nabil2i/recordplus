@@ -12,6 +12,7 @@ python-decouple = "*"
 whitenoise = "*"
 drf-nested-routers = "*"
 # moviepy = "*"
+celery = "*"
 
 [dev-packages]
 
