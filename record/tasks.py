@@ -13,23 +13,24 @@ def transcribe_video(video_id):
   print("Transcribing video...")
   try:
     # get video path
-    video = RecordedVideo.objects.get(pk=video)
+    print(f"video id: {video_id}")
+    video = RecordedVideo.objects.get(pk=video_id)
     video_file_path = video.get_video_file_url()
     
     if not video_file_path:
       print(f"Video with ID {video_id} not found")
       return
       
-    # with open(video_file_path, 'rb') as video_file:
-    #   response = openai.Audio.transcribe("whisper-1", video_file)
-    
     with open(video_file_path, 'rb') as video_file:
-      response = openai.Transcription.create(
-        audio=video_file,
-        engine="whisper",
-        language="en-US",
-        max_tokens=300,
-      )
+      response = openai.Audio.transcribe("whisper-1", video_file)
+    
+    # with open(video_file_path, 'rb') as video_file:
+    #   response = openai.Transcription.create(
+    #     audio=video_file,
+    #     engine="whisper",
+    #     language="en-US",
+    #     max_tokens=300,
+    #   )
       
     print(response)
     

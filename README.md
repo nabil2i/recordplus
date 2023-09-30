@@ -11,11 +11,10 @@ BASE URL: recordplus.onrender.com/api/
 
 ## videos
 
-1. 
+1. Upload a video
 
-    Upload a video
 
-* PHASE 1: Send a video upload request with the title and the description. You will receive a video ID that will we use to send chuncks of video
+* PHASE 1: Send a video upload request with the title(mandatory), the description(optional) and a first chunk of your video(mandatory) . You will receive a video ID that you will use to send remaining chuncks of you video. The video ID will be in the endpoint URL
 
 *Endpoint:*  `POST`: ```/record/videos/```
 
@@ -23,25 +22,25 @@ BASE URL: recordplus.onrender.com/api/
 
 ```
 title: string, maxLength(255)
-description: string
+description: string(optional)
+video_file: binary
 ```
 
 *Response:* `Code: 201`
 
 ```JSON
-[
+
     {"video_id": number}
-]
+
 ```
 
 * PHASE 2: Use the received video ID to send chuncks of your video
 
-*Endpoint:*  `PATCH`: ```/record/videos/update_video_chunck```
+*Endpoint:*  `PATCH`: ```/record/videos/{video_id}/update_video_chunck/```
 
 *Parameters:*
 
 ```
-video_id: string
 video_chunck: binary
 ```
 
@@ -55,12 +54,12 @@ video_chunck: binary
 
 * PHASE 3: Keep sending the chunks and after receiving the OK response from the last chunk, send a request to finalize the upload and transcribe the video.
 
-*Endpoint:*  `POST`: ```/record/videos/finalize_video_upload```
+*Endpoint:*  `POST`: ```/record/videos/{video_id}/finalize_video_upload/```
 
 *Parameters:*
 
 ```
-video_id: string
+None
 ```
 
 *Response:* `Code: 200`
@@ -110,7 +109,8 @@ Response:
         "title": string,
         "description": string
         "video_file": string(url),
-        "created_at": string(UTC time)
+        "created_at": string(UTC time),
+        transcription: string
     },
 ]
 ```
@@ -127,12 +127,13 @@ Response:
         "title": string,
         "description": string
         "video_file": string(url),
-        "created_at": string(UTC time)
+        "created_at": string(UTC time),
+        transcription: string
     },
 ]
 ```
 
-4. `GET`: ```/record/videos/{id}/stream_video/```
+4. `GET`: ```/record/videos/{video_id}/stream_video/```
 
 Stream a video
 

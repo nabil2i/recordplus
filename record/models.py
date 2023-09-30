@@ -14,7 +14,8 @@ class RecordedVideo(models.Model):
                                   FileExtensionValidator(allowed_extensions=['mp4', 'webm', 'avi'])
                                   ],
                                 blank=True,
-                                null=True)
+                                # null=True
+                                )
   created_at = models.DateTimeField(auto_now_add=True)
   
   def __str__(self):
@@ -22,7 +23,7 @@ class RecordedVideo(models.Model):
 
   def get_video_file_url(self):
     if (self.video_file):
-      return settings.MEDIA_URL + self.video_file.name
+      return settings.MEDIA_ROOT + '/' + self.video_file.name
     return None
 
 

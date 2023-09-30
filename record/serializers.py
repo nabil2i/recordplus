@@ -10,7 +10,7 @@ class TranscriptionSerializer(serializers.ModelSerializer):
     
 
 class RecordedVideoSerializer(serializers.ModelSerializer):
-  # video_file = serializers.FileField(write_only=True)
+  video_file = serializers.FileField(required=False)
   transcription = TranscriptionSerializer()
   class Meta:
     model = RecordedVideo
@@ -30,12 +30,12 @@ class RecordedVideoSerializer(serializers.ModelSerializer):
     if not video_file:
       raise serializers.ValidationError('Upload a video')
     
-    # file should be max 100MB
-    max_size = 1024 * 1024 * 100  
-    if video_file.size > max_size:
-      raise serializers.ValidationError(f'File size exceeds the limit of {max_size}MB.')
+    ## file should be max 100MB
+    # max_size = 1024 * 1024 * 100  
+    # if video_file.size > max_size:
+    #   raise serializers.ValidationError(f'File size exceeds the limit of {max_size}MB.')
     
-    # title must be at least 5 characters long
+    ## title must be at least 5 characters long
     if len(title) < 5:
       raise serializers.ValidationError('Title must be at least 5 characters long.')
     

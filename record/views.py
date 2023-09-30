@@ -1,14 +1,18 @@
 # import os
-# import tempfile
+import tempfile
 
 from django.core.exceptions import SuspiciousFileOperation
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404
-# from moviepy.editor import VideoFileClip
+from django.conf import settings
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import SuspiciousFileOperation
+
+from moviepy.editor import VideoFileClip, concatenate_videoclips, CompositeVideoClip
+
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -18,45 +22,69 @@ from .serializers import RecordedVideoSerializer
 from .tasks import transcribe_video
 
 
-# Create your views here.
 class VideoViewSet(ModelViewSet):
-  http_method_names = ['get', 'post']
+  http_method_names = ['get', 'post', 'patch']
   queryset = RecordedVideo.objects.prefetch_related('transcription').all()
   serializer_class = RecordedVideoSerializer
-  parser_classes = (MultiPartParser, FormParser)
+  parser_classes = (MultiPartParser, FormParser, JSONParser)
   
   def create(self, request, *args, **kwargs):
     title = request.data.get('title')
     description = request.data.get('description')
-    video_instance = RecordedVideo.objects.create(title=title, description=description)
+    video_file = request.FILES.get('video_file')
+    video_instance = RecordedVideo.objects.create(
+      title=title,
+      description=description,
+      video_file=video_file
+    )
+        
+    if not title:
+      return Response({'error': "supply a title"})
+    if not video_file:
+      return Response({'error': "supply a video file"})
+    
+    # serializer = self.get_serializer(data=request.data)
+    # serializer.is_valid(raise_exception=True)
+    # video_instance = serializer.save()
     
     return Response({'video_id': video_instance.id}, status=status.HTTP_201_CREATED)
   
-  @action(detail=False, methods=['PATCH'])
-  def update_video_file(self, request):
-    video_id = request.data.get('video_id')
-    video_chunck = request.FILES.get('video_chunck')
+  @action(detail=True, methods=['PATCH'])
+  def update_video_file(self, request, pk):
+    video_chunk = request.FILES.get('video_chunk')
     
-    if not video_id or not video_chunck:
+    if not pk or not video_chunk:
       return Response({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
-    video_instance = get_object_or_404(RecordedVideo, pk=video_id)
+    
+    video_instance = get_object_or_404(RecordedVideo, pk=pk)
 
+    video_file_path = video_instance.get_video_file_url()
+    
     try:
-      video_instance.video_file.save(video_chunck.name, video_chunck)
+      with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        for chunk in video_chunk.chunks():
+          temp_file.write(chunk)
+                          
+      existing_clip = VideoFileClip(video_file_path)
+      new_clip = VideoFileClip(temp_file.name)
+      final_clip = concatenate_videoclips([existing_clip, new_clip])
+      final_clip.write_videofile(video_file_path,
+                                #  method="compose",
+                                #  codec="libx264"
+                                  )
+      temp_file.delete()
+      # video_instance.video_file.save(video_chunk.name, video_chunk)
       return Response({'message': 'Chunk uploaded successfully'}, status=status.HTTP_200_OK)
+    
     except SuspiciousFileOperation:
       return Response({'message': 'Invalid file operation'}, status=status.HTTP_400_BAD_REQUEST)
     
-  @action(detail=False, methods=['POST'])
-  def finalize_video_upload(self, request):
-    video_id = request.data.get('video_id')
-    
-    if not video_id:
+  @action(detail=True, methods=['POST'])
+  def finalize_video_upload(self, request, pk):  
+    if not pk:
       return Response({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
     
-    video_instance = get_object_or_404(RecordedVideo, pk=video_id)
-    
-    transcribe_video.delay(video_instance.id)
+    transcribe_video.delay(pk)
     
     return Response({'message': 'Transcription task initiated'}, status=status.HTTP_200_OK)
     
@@ -71,10 +99,8 @@ class VideoViewSet(ModelViewSet):
     video = get_object_or_404(RecordedVideo, pk=pk)
     
     video_file_path = video.video_file.path
-    # print("path: " + video_file_path)
     
     file_extension = video.video_file.name.split('.')[-1].lower()
-    # print("extension; " + file_extension)
     
     content_types = {
             'mp4': 'video/mp4',
