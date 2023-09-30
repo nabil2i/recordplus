@@ -25,7 +25,7 @@ idna==3.4
 imageio==2.31.2
 imageio-ffmpeg==0.4.9
 inflection==0.5.1
-jsonschema==4.19.1
+jsonschema==4.17.3
 jsonschema-specifications==2023.7.1
 kombu==5.3.2
 moviepy==1.0.3
