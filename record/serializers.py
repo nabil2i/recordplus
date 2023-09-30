@@ -3,6 +3,12 @@ from rest_framework import serializers
 from .models import RecordedVideo, Transcription
 
 
+class TranscriptionSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Transcription
+    fields = ['id', 'transcription_text']
+    
+
 class RecordedVideoSerializer(serializers.ModelSerializer):
   # video_file = serializers.FileField(write_only=True)
   transcription = TranscriptionSerializer()
@@ -34,9 +40,3 @@ class RecordedVideoSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError('Title must be at least 5 characters long.')
     
     return data
-
-class TranscriptionSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = Transcription
-    fields = ['id', 'transcription_text']
-    
