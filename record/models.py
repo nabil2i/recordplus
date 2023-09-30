@@ -25,10 +25,10 @@ class RecordedVideo(models.Model):
   #   return ''
 
 class Transcription(models.Model):
-  recorded_video = models.models.OneToOneField(RecordedVideo,
+  recorded_video = models.OneToOneField(RecordedVideo,
                                                on_delete=models.CASCADE,
                                                related_name='transcription')
-  transcription_text = models.models.TextField()
+  transcription_text = models.TextField()
   
   def __str__(self):
     return f"Transcription for video {self.recorded_video.title}"
