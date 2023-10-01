@@ -48,7 +48,7 @@ video_chunk: binary
 
 ```JSON
 [
-    {'message': 'Chunk uploaded successfully'}
+    {"message": "Chunk uploaded successfully"}
 ]
 ```
 
@@ -66,7 +66,7 @@ None
 
 ```JSON
 [
-    {'message': 'Transcription task initiated'}
+    {"message": "Transcription task initiated"}
 ]
 ```
 
@@ -110,7 +110,7 @@ Response:
         "description": "string"
         "video_file": "string(url)",
         "created_at": "string(UTC time)",
-        transcription: {
+        "transcription:" {
             "id": "number",
             "transcription_text": "string"
         }
@@ -131,7 +131,7 @@ Response:
         "description": "string"
         "video_file": "string(url)",
         "created_at": "string(UTC time)",
-        transcription: {
+        "transcription:" {
             "id": "number",
             "transcription_text": "string"
         }
