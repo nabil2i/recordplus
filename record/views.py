@@ -32,17 +32,18 @@ class VideoViewSet(ModelViewSet):
     title = request.data.get('title')
     description = request.data.get('description')
     video_file = request.FILES.get('video_file')
+    
+    if not title:
+      return Response({'error': "supply a title"})
+    if not video_file:
+      return Response({'error': "supply a video file"})
+    
     video_instance = RecordedVideo.objects.create(
       title=title,
       description=description,
       video_file=video_file
     )
         
-    if not title:
-      return Response({'error': "supply a title"})
-    if not video_file:
-      return Response({'error': "supply a video file"})
-    
     # serializer = self.get_serializer(data=request.data)
     # serializer.is_valid(raise_exception=True)
     # video_instance = serializer.save()
