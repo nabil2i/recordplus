@@ -3,10 +3,12 @@ The project is a REST API using python django to consume endpoints by a google c
 
 Video formats supported: `mp4, webm, avi`
 ## Use the API
-It is deployed at [https://recordplus.onrender.com/api/record/](https://recordplus.onrender.com/api/record/)
+It is deployed at [http://34.207.165.115/api/record/](http://34.207.165.115/api/record/)
+<!-- 
+It is deployed at [https://recordplus.onrender.com/api/record/](https://recordplus.onrender.com/api/record/) -->
 
 ```
-BASE URL: recordplus.onrender.com/api/
+BASE URL: http://34.207.165.115/api/record
 ```
 
 ## videos
@@ -16,7 +18,7 @@ BASE URL: recordplus.onrender.com/api/
 
 * PHASE 1: Send a video upload request with the title(optional), the description(optional) and a first chunk of your video(mandatory) . You will receive a video ID that you will use to send remaining chuncks of you video. The video ID will be in the endpoint URL
 
-*Endpoint:*  `POST`: ```/record/videos/```
+*Endpoint:*  `POST`: ```/videos/```
 
 *Parameters:*
 
@@ -36,7 +38,7 @@ video_file: binary
 
 * PHASE 2: Use the received video ID to send chuncks of your video
 
-*Endpoint:*  `PATCH`: ```/record/videos/{video_id}/update_video_file/```
+*Endpoint:*  `PATCH`: ```/videos/{video_id}/update_video_file/```
 
 *Parameters:*
 
@@ -54,7 +56,7 @@ video_chunk: binary
 
 * PHASE 3: Keep sending the chunks and after receiving the OK response from the last chunk, send a request to finalize the upload and transcribe the video.
 
-*Endpoint:*  `POST`: ```/record/videos/{video_id}/finalize_video_upload/```
+*Endpoint:*  `POST`: ```/videos/{video_id}/finalize_video_upload/```
 
 *Parameters:*
 
@@ -70,7 +72,7 @@ None
 ]
 ```
 
-<!-- 1. `POST`: ```/record/videos/```
+<!-- 1. `POST`: ```/videos/```
 
 Upload a video
 
@@ -96,7 +98,7 @@ Response: `Code: 201`
 ]
 ``` -->
 
-2. `GET`: ```/record/videos/```
+2. `GET`: ```/videos/```
 
 Retrive all videos
 
@@ -117,7 +119,7 @@ Response:
     },
 ]
 ```
-3. `GET`: ```/record/videos/{video_id}/```
+3. `GET`: ```/videos/{video_id}/```
 
 Retrive a video
 
@@ -139,7 +141,7 @@ Response:
 ]
 ```
 
-4. `GET`: ```/record/videos/{video_id}/stream_video/```
+4. `GET`: ```/videos/{video_id}/stream_video/```
 
 Stream a video
 

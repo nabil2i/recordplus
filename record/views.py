@@ -63,6 +63,7 @@ class VideoViewSet(ModelViewSet):
     video_file_path = video_instance.get_video_file_url()
     
     try:
+      # with tempfile.NamedTemporaryFile(delete=False,  suffix='.webm') as temp_file:
       with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         for chunk in video_chunk.chunks():
           temp_file.write(chunk)

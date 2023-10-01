@@ -141,7 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_ORIGINS = [
- 
+    "http://34.207.165.115/",
     "https://recordplus.onrender.com/",
     "http:127.0.0.1:8000/"
 ]
