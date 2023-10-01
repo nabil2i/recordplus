@@ -33,10 +33,10 @@ class VideoViewSet(ModelViewSet):
     description = request.data.get('description')
     video_file = request.FILES.get('video_file')
     
-    if not title:
-      return Response({'error': "supply a title"})
     if not video_file:
-      return Response({'error': "supply a video file"})
+      return Response({'error': "supply the 1st chunk of video file in format .avi, .webm, or .mp4"})
+    # if not title:
+    #   return Response({'error': "supply a title"})
     
     video_instance = RecordedVideo.objects.create(
       title=title,

@@ -14,14 +14,14 @@ BASE URL: recordplus.onrender.com/api/
 1. Upload a video
 
 
-* PHASE 1: Send a video upload request with the title(mandatory), the description(optional) and a first chunk of your video(mandatory) . You will receive a video ID that you will use to send remaining chuncks of you video. The video ID will be in the endpoint URL
+* PHASE 1: Send a video upload request with the title(optional), the description(optional) and a first chunk of your video(mandatory) . You will receive a video ID that you will use to send remaining chuncks of you video. The video ID will be in the endpoint URL
 
 *Endpoint:*  `POST`: ```/record/videos/```
 
 *Parameters:*
 
 ```
-title: string, maxLength(255)
+title: string, maxLength(255, optional)
 description: string(optional)
 video_file: binary
 ```

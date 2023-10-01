@@ -5,7 +5,7 @@ from .validators import validate_file_size
 
 # Create your models here.
 class RecordedVideo(models.Model):
-  title = models.CharField(max_length=255)
+  title = models.CharField(max_length=255, null=True)
   description = models.TextField(null=True)
   # cloudinary_url = models.URLField()
   video_file = models.FileField(upload_to='record/videos/',
