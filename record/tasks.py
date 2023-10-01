@@ -36,7 +36,7 @@ def transcribe_video(video_id):
     
     if 'text' in response:
       transcription_text = response['text']
-      # print(transcription_text)
+      print(transcription_text)
     
       transcription, created = Transcription.objects.get_or_create(
         recorded_video=video,
