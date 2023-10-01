@@ -54,6 +54,7 @@ class VideoViewSet(ModelViewSet):
   def update_video_file(self, request, pk):
     video_chunk = request.FILES.get('video_chunk')
     
+    # print(video_chunk)
     if not pk or not video_chunk:
       return Response({'message': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
     
