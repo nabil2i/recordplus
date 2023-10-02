@@ -28,6 +28,7 @@ class VideoViewSet(ModelViewSet):
   serializer_class = RecordedVideoSerializer
   parser_classes = (MultiPartParser, FormParser, JSONParser)
   
+  # POST /api/record/videos/
   def create(self, request, *args, **kwargs):
     title = request.data.get('title')
     description = request.data.get('description')
@@ -43,13 +44,10 @@ class VideoViewSet(ModelViewSet):
       description=description,
       video_file=video_file
     )
-        
-    # serializer = self.get_serializer(data=request.data)
-    # serializer.is_valid(raise_exception=True)
-    # video_instance = serializer.save()
     
     return Response({'video_id': video_instance.id}, status=status.HTTP_201_CREATED)
   
+  # PATCH /api/record/videos/{video_id}/update_video_file
   @action(detail=True, methods=['PATCH'])
   def update_video_file(self, request, pk):
     video_chunk = request.FILES.get('video_chunk')
@@ -75,7 +73,6 @@ class VideoViewSet(ModelViewSet):
                                 #  method="compose",
                                 #  codec="libx264"
                                   )
-      # video_instance.video_file.save(video_chunk.name, video_chunk)
       return Response({'message': 'Chunk uploaded successfully'}, status=status.HTTP_200_OK)
     
     except SuspiciousFileOperation:
@@ -86,6 +83,7 @@ class VideoViewSet(ModelViewSet):
       if temp_file.name:
         os.remove(temp_file.name)
 
+  # POST /api/record/videos/{video_id}/finalize_video_upload
   @action(detail=True, methods=['POST'])
   def finalize_video_upload(self, request, pk):  
     if not pk:
@@ -94,13 +92,8 @@ class VideoViewSet(ModelViewSet):
     transcribe_video.delay(pk)
     
     return Response({'message': 'Transcription task initiated'}, status=status.HTTP_200_OK)
-    
-    # serializer = self.get_serializer(data=request.data)
-    # serializer.is_valid(raise_exception=True)
-    # video_instance = serializer.save()
-    # transcribe_video.delay(video_instance.id)
-    # return Response(serializer.data, status=status.HTTP_201_CREATED)
   
+  # GET /api/record/videos/{video_id}/stream_video/
   @action(detail=True, methods=['GET'])
   def stream_video(self, request, pk):
     video = get_object_or_404(RecordedVideo, pk=pk)
@@ -129,13 +122,15 @@ class VideoViewSet(ModelViewSet):
       response['Content-Disposition'] = f'inline; filename="{video_file_path}"'
       return response
 
-      # with open(video_file_path, 'rb') as video_file:
-      #   response = HttpResponse(video_file.read(), content_type=content_type)
-      #   response['Content-Disposition'] = f'inline; filename="{video_file_path}"'
-      #   return response
     except FileNotFoundError:
       return response({ 'message': 'Video not found'}, status=status.HTTP_404_NOT_FOUND)
 
+      
+      
+      
+      
+      
+      
       
       
 # class VideoDetail(APIView):  
