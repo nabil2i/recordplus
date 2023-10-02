@@ -44,6 +44,7 @@ DEBUG = config('DEBUG', default='False')
 
 ALLOWED_HOSTS = ["*"]
 
+AUTH_USER_MODEL = 'core.User'
 
 # Application definition
 
@@ -62,6 +63,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     
     # my apps
+    'core',
     'record',
     
 ]
