@@ -75,8 +75,11 @@ class VideoViewSet(ModelViewSet):
                                   )
       return Response({'message': 'Chunk uploaded successfully'}, status=status.HTTP_200_OK)
     
-    except SuspiciousFileOperation:
-      return Response({'message': 'Invalid file operation'}, status=status.HTTP_400_BAD_REQUEST)
+    except SuspiciousFileOperation as e:
+      return Response({'message': 'Invalid file operation', 'error_details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    except Exception as e:
+      return Response({'message': 'An error occurred on the server', 'error_details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     finally:
       temp_file.close()
