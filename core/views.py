@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import jwt
 from rest_framework.generics import GenericAPIView
-from .serializers import EmailVerificationSerializer, RegisterSerializer
+from .serializers import EmailVerificationSerializer, LoginSerializer, RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -102,3 +102,50 @@ class VerifyEmail(APIView):
       return Response({ 'error' : 'Activation link expired.'}, status=status.HTTP_400_BAD_REQUEST)
     except jwt.exceptions.DecodeError as identifier:
       return Response({ 'error' : 'Invalid token.'}, status=status.HTTP_400_BAD_REQUEST)
+ 
+    
+class LoginView(APIView):
+  serializer_class = LoginSerializer
+  
+  @swagger_auto_schema(
+    operation_summary='Login user',
+    operation_description='This endpoint logs in the user.',
+    request_body=LoginSerializer,
+    # manual_parameters=[
+    #   openapi.Parameter(
+    #     "email",
+    #     in_=openapi.IN_BODY,
+    #     description="Email",
+    #     type=openapi.TYPE_STRING
+    #   ),
+    #   openapi.Parameter(
+    #     "password",
+    #     in_=openapi.IN_BODY,
+    #     description="Password",
+    #     type=openapi.TYPE_STRING
+    #   ),
+    # ],
+    responses={
+      200: openapi.Response(
+        description="Login successful",
+        examples={
+          "application/json": {
+            "email": "email@gmail.com",
+            "username": "username",
+            "tokens": "{'refresh': 'eyJ0eXAiOi', 'access': 'eyJ0b2kZ6r3o'}"
+          },
+        }
+      ),
+      400: openapi.Response(
+        description="Error during login",
+        examples={
+            "application/json": {"error": "Account disabled, contact admin or Email is not verified or Invalid credentials."},
+        },
+      ),
+    }
+  )
+  def post(self, request):
+    serializer = self.serializer_class(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    
+    return Response(serializer.data, status=status.HTTP_200_OK)
