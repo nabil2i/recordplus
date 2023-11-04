@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -58,6 +59,7 @@ INSTALLED_APPS = [
     
     # 3rd party apps
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'whitenoise.runserver_nostatic',
     'drf_yasg',
@@ -197,13 +199,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    'NON_FIELD_ERRORS_KEY': 'error',
     # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', 
     # 'COERCE_DECIMAL_TO_STRING': False,
     # 'PAGE_SIZE':10, # set locally
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', # set globally
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
-    # ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticated'
     # ],
@@ -215,3 +218,20 @@ REST_FRAMEWORK = {
 # }
 CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 # CELERY_RESULT_BACKEND = 'rpc://'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=4),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS=True
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+# print(EMAIL_HOST_USER)
+# print(EMAIL_HOST_PASSWORD)
+
+# DEFAULT_FROM_EMAIL="from@nab.com"

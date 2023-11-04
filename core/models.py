@@ -10,11 +10,12 @@ class UserManager(BaseUserManager):
     if username is None:
       raise TypeError('User should have a username')
     if email is None:
-      raise TypeError('User should have a email')
+      raise TypeError('User should have an email')
 
     user=self.model(username=username, email=self.normalize_email(email))
     user.set_password(password)
     user.save()
+    return user
     
   def create_superuser(self, username, email, password=None):
     if password is None:
