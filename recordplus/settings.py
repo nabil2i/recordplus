@@ -47,6 +47,8 @@ ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = 'core.User'
 
+SITE_ID = 1
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -64,11 +66,50 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'drf_yasg',
     
+    
+    # all auth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.google',    
     # my apps
     'core',
     'record',
+    # 'social_auth'
     
 ]
+
+SOCIALACCOUNT_LOGIN_ON_GET=True # skip one page when authenticating
+
+# Authentication URLs
+LOGIN_REDIRECT_URL = '/auth'  # Set your desired login redirect URL
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Change email verification behavior
+
+LOGOUT_REDIRECT_URL = '/auth'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        # For each OAuth based provider, either add a ``SocialApp``
+        # (``socialaccount`` app) containing the required client
+        # credentials, or list them here:
+        # 'APP': {
+        #     'client_id': config('GOOGLE_CLIENT_ID'),
+        #     'secret': config('GOOGLE_CLIENT_SECRET'),
+        #     'key': ''
+        # }
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -80,7 +121,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    "allauth.account.middleware.AccountMiddleware",
 ]
+
 
 ROOT_URLCONF = 'recordplus.urls'
 
@@ -235,3 +279,13 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # print(EMAIL_HOST_PASSWORD)
 
 # DEFAULT_FROM_EMAIL="from@nab.com"
+
+AUTHENTICATION_BACKENDS = [
+    
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+    
+]

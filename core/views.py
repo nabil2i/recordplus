@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 import jwt
 from rest_framework.generics import GenericAPIView
 from .serializers import EmailVerificationSerializer, LoginSerializer, RegisterSerializer
@@ -149,3 +150,12 @@ class LoginView(APIView):
     serializer.is_valid(raise_exception=True)
     
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def home(request):
+  return render(request, "home.html")
+
+
+def logout_view(request):
+  logout(request)
+  return redirect("/")

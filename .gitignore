@@ -256,3 +256,4 @@ local_settings.py
 .vscode/
 media/
 virtual/
+venv/

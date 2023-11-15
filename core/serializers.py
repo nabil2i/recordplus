@@ -43,8 +43,11 @@ class LoginSerializer(serializers.ModelSerializer):
   def validate(self, attrs):
     email = attrs.get('email', '')
     password = attrs.get('password', '')
-    
+    filtered_user = User.objects.filter(email=email)
     user = auth.authenticate(email=email, password=password)
+    
+    if filtered_user.exists() and filtered_user[0].auth_provider != 'email':
+      raise AuthenticationFailed(detail="Please Login using " + filtered_user[0].auth_provider)
     
     # # debugging
     # import pdb
@@ -59,11 +62,8 @@ class LoginSerializer(serializers.ModelSerializer):
     if not user.is_verified:
       raise AuthenticationFailed('Email is not verified.')
 
-    
     return {
       'email': user.email,
       'username': user.username,
       'tokens': user.tokens
     }
-    
-    return super().validate(attrs)

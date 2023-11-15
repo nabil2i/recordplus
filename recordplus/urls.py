@@ -43,10 +43,14 @@ api_version = 'v1'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(f'api/{api_version}/auth/', include('core.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('auth/', include('core.urls')),
+    # path(f'api/{api_version}/auth/', include('core.urls')),
     path(f'api/{api_version}/record/', include('record.urls')),
+    path(f'api/{api_version}/social_auth/', include(('social_auth.urls', 'social_auth'), namespace="social-auth")),
     path(f'api/{api_version}/swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/api.json/', schema_view.without_ui(cache_timeout=0), name='schema-swagger-ui'),
     # path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path(f'api/{api_version}/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ] + static(settings.MEDIA_URL,
