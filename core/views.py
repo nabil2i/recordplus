@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 import jwt
 from rest_framework.generics import GenericAPIView
+
+from .renderers import UserRenderer
 from .serializers import EmailVerificationSerializer, LoginSerializer, RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,6 +20,7 @@ from drf_yasg import openapi
 
 class RegisterView(GenericAPIView):
   serializer_class = RegisterSerializer
+  renderer_classes = (UserRenderer, )
   
   @swagger_auto_schema(
     operation_summary='Register user',
