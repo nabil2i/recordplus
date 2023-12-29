@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
 from .models import User
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site 
@@ -98,7 +99,7 @@ class RegisterView(GenericAPIView):
     return Response(user_data, status=status.HTTP_201_CREATED)
 
 
-class VerifyEmail(APIView):
+class VerifyEmailView(APIView):
   serializer_class = EmailVerificationSerializer
   
   token_param_config = openapi.Parameter(
@@ -208,10 +209,10 @@ def logout_view(request):
   return redirect("/api/auth")
 
 
-class TokenRefresh(GenericAPIView):
-  pass
+# class TokenRefreshView(GenericAPIView):
+#   pass
 
-class RequestPasswordReset(GenericAPIView):
+class RequestPasswordResetView(GenericAPIView):
   serializer_class = PasswordResetSerializer
   
   def post(self, request):
@@ -242,7 +243,7 @@ class RequestPasswordReset(GenericAPIView):
     return Response({'success': ' A reset link has been sent to your email.'}, status=status.HTTP_200_OK)
    
     
-class PasswordTokenCheck(GenericAPIView):
+class PasswordTokenCheckView(GenericAPIView):
   
   def get(self, request, uidb64, token):
     try:
@@ -256,7 +257,7 @@ class PasswordTokenCheck(GenericAPIView):
     except DjangoUnicodeDecodeError as identifier:
       return Response({'error': "Token is not valid. Please request a new one."}, status=status.HTTP_401_UNAUTHORIZED)
       
-class SetNewPassword(GenericAPIView):
+class SetNewPasswordView(GenericAPIView):
   serializer_class = SetNewPasswordSerializer
   
   def patch(self, request):
