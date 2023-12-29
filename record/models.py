@@ -3,6 +3,8 @@ from django.conf import settings
 from django.core.validators import FileExtensionValidator
 from .validators import validate_file_size
 
+User = settings.AUTH_USER_MODEL
+
 # Create your models here.
 class RecordedVideo(models.Model):
   title = models.CharField(max_length=255, null=True)
@@ -15,6 +17,7 @@ class RecordedVideo(models.Model):
                                 blank=True,
                                 # null=True
                                 )
+  owner = models.ForeignKey(User, on_delete=models.CASCADE)
   created_at = models.DateTimeField(auto_now_add=True)
   
   def __str__(self):
@@ -34,3 +37,6 @@ class Transcription(models.Model):
   
   def __str__(self):
     return f"Transcription for video {self.recorded_video.title}"
+  
+  class Meta:
+    ordering: ['-created_at']

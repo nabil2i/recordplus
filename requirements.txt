@@ -58,3 +58,4 @@ wcwidth==0.2.8
 whitenoise==6.5.0
 yarl==1.9.2
 django-allauth==0.58.1
+djoser==2.2.2

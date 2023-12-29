@@ -1,9 +1,22 @@
 from rest_framework import serializers
-from .models import User
+# from .models import User
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
+from djoser.serializers import UserCreateSerializer
+
+User = auth.get_user_model()
+
+# WITH DJOSER
+class UserCreateSerializer(UserCreateSerializer):
+  password = serializers.CharField(max_length=68, min_length=6, write_only=True)
+  
+  class Meta(UserCreateSerializer.Meta):
+    model = User
+    fields = [ 'username', 'email', 'password']
+    
 
 
+# WITHOUT DJOSER
 class RegisterSerializer(serializers.ModelSerializer):
   password = serializers.CharField(max_length=68, min_length=6, write_only=True)
   
@@ -49,7 +62,7 @@ class LoginSerializer(serializers.ModelSerializer):
     if filtered_user.exists() and filtered_user[0].auth_provider != 'email':
       raise AuthenticationFailed(detail="Please Login using " + filtered_user[0].auth_provider)
     
-    # # debugging
+    ## debugging
     # import pdb
     # pdb.set_trace()
     

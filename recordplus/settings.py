@@ -25,7 +25,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # BASE_URL= config(BASE_URL)
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -34,7 +33,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 openai.api_key = config('OPENAI_API_KEY')
 
-# # CLOUDINARY configuration
+## CLOUDINARY configuration
 # CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME')
 # CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY')
 # CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET')
@@ -43,7 +42,7 @@ openai.api_key = config('OPENAI_API_KEY')
 # DEBUG = True
 DEBUG = config('DEBUG', default='False')
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -62,20 +61,21 @@ INSTALLED_APPS = [
     # 3rd party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'djoser',
     'corsheaders',
     'whitenoise.runserver_nostatic',
     'drf_yasg',
     
+    # # all auth
+    # 'django.contrib.sites',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
     
-    # all auth
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.twitter',
+    # 'allauth.socialaccount.providers.google',    
     
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.twitter',
-    'allauth.socialaccount.providers.google',    
     # my apps
     'core',
     'record',
@@ -83,33 +83,45 @@ INSTALLED_APPS = [
     
 ]
 
-SOCIALACCOUNT_LOGIN_ON_GET=True # skip one page when authenticating
+# SOCIALACCOUNT_LOGIN_ON_GET=True # skip one page when authenticating
 
-# Authentication URLs
-LOGIN_REDIRECT_URL = '/auth'  # Set your desired login redirect URL
-# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Change email verification behavior
+# # Authentication URLs
+# LOGIN_REDIRECT_URL = '/api/auth'
+# # ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
-LOGOUT_REDIRECT_URL = '/auth'
+# LOGOUT_REDIRECT_URL = '/api/auth'
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
-        # 'APP': {
-        #     'client_id': config('GOOGLE_CLIENT_ID'),
-        #     'secret': config('GOOGLE_CLIENT_SECRET'),
-        #     'key': ''
-        # }
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         # For each OAuth based provider, either add a ``SocialApp``
+#         # (``socialaccount`` app) containing the required client
+#         # credentials, or list them here:
+#         # 'APP': {
+#         #     'client_id': config('GOOGLE_CLIENT_ID'),
+#         #     'secret': config('GOOGLE_CLIENT_SECRET'),
+#         #     'key': ''
+#         # },
+#         'SCOPE': [
+#             'profile',
+#             'email',
+#         ],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         }
+#     },
+#     'facebook': {
+#         'APP': {
+#             'client_id': config('FACEBOOK_APP_ID'),
+#             'secret': '',
+#         }
+#     },
+#     'twitter': {
+#         'APP': {
+#             'consumer_key': config('TWITTER_API_KEY'),
+#             'secret': config('TWITTER_CONSUMER_SECRET'),
+#         }
+#     },
+# }
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -122,7 +134,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
-    "allauth.account.middleware.AccountMiddleware",
+    # "allauth.account.middleware.AccountMiddleware",
 ]
 
 
@@ -131,7 +143,8 @@ ROOT_URLCONF = 'recordplus.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -232,7 +245,11 @@ USE_TZ = True
 STATIC_URL = os.path.join(BASE_DIR, "/static/")
 STATIC_ROOT = os.path.join(BASE_DIR, "/staticfiles/")
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'build/static')
+# ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -246,8 +263,9 @@ REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'error',
     # 'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', 
     # 'COERCE_DECIMAL_TO_STRING': False,
-    # 'PAGE_SIZE':10, # set locally
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', # set globally
+    'PAGE_SIZE':10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -256,14 +274,8 @@ REST_FRAMEWORK = {
     # ],
 }
 
-# SPECTACULAR_SETTINGS = {
-#     'TITLE': 'RECORD PLUS',
-    
-# }
-CELERY_BROKER_URL = config('CELERY_BROKER_URL')
-# CELERY_RESULT_BACKEND = 'rpc://'
-
 SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=4),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
@@ -274,10 +286,6 @@ EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-
-# print(EMAIL_HOST_USER)
-# print(EMAIL_HOST_PASSWORD)
-
 # DEFAULT_FROM_EMAIL="from@nab.com"
 
 AUTHENTICATION_BACKENDS = [
@@ -285,7 +293,44 @@ AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
 
-    # `allauth` specific authentication methods, such as login by email
-    'allauth.account.auth_backends.AuthenticationBackend',
+    ## `allauth` specific authentication methods, such as login by email
+    # 'allauth.account.auth_backends.AuthenticationBackend',
     
 ]
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS' : {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'email/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    'SEND_CONFIRMATION_EMAIL': True,
+    'SEND_ACTIVATION_EMAIL': True,
+    'SET_USERNAME_RETYPE': True,
+    'SET_PASSWORD_RETYPE': True,
+    'SERIALIZERS': {
+        'user_create': 'core.serializers.UserCreateSerializer',  
+        'user': 'core.serializers.UserCreateSerializer',  
+        'user_delete': 'core.serializers.UserDeleteSerializer',  
+    },
+}
+
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'RECORD PLUS',
+    
+# }
+
+CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+# CELERY_RESULT_BACKEND = 'rpc://'

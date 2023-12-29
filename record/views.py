@@ -11,7 +11,7 @@ from django.core.exceptions import SuspiciousFileOperation
 from moviepy.editor import VideoFileClip, concatenate_videoclips, CompositeVideoClip
 
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
 from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -20,6 +20,8 @@ from rest_framework.viewsets import ModelViewSet
 from .models import RecordedVideo
 from .serializers import RecordedVideoSerializer
 from .tasks import transcribe_video
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsOwner
 
 
 class VideoViewSet(ModelViewSet):
@@ -27,8 +29,20 @@ class VideoViewSet(ModelViewSet):
   queryset = RecordedVideo.objects.prefetch_related('transcription').all()
   serializer_class = RecordedVideoSerializer
   parser_classes = (MultiPartParser, FormParser, JSONParser)
+  # permission_classes = [
+  #   IsAuthenticated,
+  #   IsOwner
+  # ]
   
-  # POST /api/record/videos/
+  @permission_classes([IsAuthenticated, IsOwner])
+  def get_queryset(self):
+    # print(self.request.headers)
+    if self.request.user.is_authenticated:
+      return self.queryset.filter(owner=self.request.user)
+    else:
+      return RecordedVideo.objects.none()
+  
+  # POST /api/vx/record/videos/
   def create(self, request, *args, **kwargs):
     title = request.data.get('title')
     description = request.data.get('description')
@@ -47,7 +61,7 @@ class VideoViewSet(ModelViewSet):
     
     return Response({'video_id': video_instance.id}, status=status.HTTP_201_CREATED)
   
-  # PATCH /api/record/videos/{video_id}/update_video_file
+  # PATCH /api/vx/record/videos/{video_id}/update_video_file
   @action(detail=True, methods=['PATCH'])
   def update_video_file(self, request, pk):
     video_chunk = request.FILES.get('video_chunk')
@@ -86,7 +100,7 @@ class VideoViewSet(ModelViewSet):
       if temp_file.name:
         os.remove(temp_file.name)
 
-  # POST /api/record/videos/{video_id}/finalize_video_upload
+  # POST /api/vx/record/videos/{video_id}/finalize_video_upload
   @action(detail=True, methods=['POST'])
   def finalize_video_upload(self, request, pk):  
     if not pk:
@@ -96,7 +110,7 @@ class VideoViewSet(ModelViewSet):
     
     return Response({'message': 'Transcription task initiated'}, status=status.HTTP_200_OK)
   
-  # GET /api/record/videos/{video_id}/stream_video/
+  # GET /api/vx/record/videos/{video_id}/stream_video/
   @action(detail=True, methods=['GET'])
   def stream_video(self, request, pk):
     video = get_object_or_404(RecordedVideo, pk=pk)
