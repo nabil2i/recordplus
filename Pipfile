@@ -58,6 +58,7 @@ vine = "==5.0.0"
 wcwidth = "==0.2.8"
 whitenoise = "==6.5.0"
 yarl = "==1.9.2"
+faker = "*"
 
 [dev-packages]
 
