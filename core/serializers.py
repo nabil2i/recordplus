@@ -9,6 +9,7 @@ from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnico
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.urls import reverse
 from .utils import Util
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 User = auth.get_user_model()
 
@@ -97,6 +98,24 @@ class LoginSerializer(serializers.ModelSerializer):
     }
 
 
+class LogoutSerializer(serializers.Serializer):
+  refresh = serializers.CharField()
+  
+  default_error_messages = {
+    'bad_token': ('Token expired or  invalid'),
+  }
+  
+  def validate(self, attrs):
+    self.token = attrs['refresh']
+    return attrs
+  
+  def save(self, **kwargs):
+    try:
+      RefreshToken(self.token).blacklist()
+    except TokenError as identifier:
+      self.fail('bad_token')  
+  
+  
 class PasswordResetSerializer(serializers.Serializer):
   email = serializers.EmailField(min_length=2)
   

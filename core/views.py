@@ -4,7 +4,7 @@ import jwt
 from rest_framework.generics import GenericAPIView
 
 from .renderers import UserRenderer
-from .serializers import EmailVerificationSerializer, LoginSerializer, PasswordResetSerializer, SetNewPasswordSerializer, RegisterSerializer
+from .serializers import EmailVerificationSerializer, LoginSerializer, LogoutSerializer, PasswordResetSerializer, SetNewPasswordSerializer, RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -22,6 +22,7 @@ from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnico
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.urls import reverse
 from .utils import Util
+from rest_framework.permissions import IsAuthenticated
 
 
 class RegisterView(GenericAPIView):
@@ -204,13 +205,16 @@ class LoginView(GenericAPIView):
 # def home(request):
 #   return render(request, "home.html")
 
-def logout_view(request):
-  logout(request)
-  return redirect("/api/auth")
+class LogoutView(GenericAPIView):
+  serializer_class = LogoutSerializer
+  permission_classes = (IsAuthenticated,)
+  
+  def post(self, request):
+    serializer = self.serializer_class(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-# class TokenRefreshView(GenericAPIView):
-#   pass
 
 class RequestPasswordResetView(GenericAPIView):
   serializer_class = PasswordResetSerializer
