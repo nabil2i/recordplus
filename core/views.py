@@ -244,6 +244,7 @@ class RequestPasswordResetView(GenericAPIView):
    
     
 class PasswordTokenCheckView(GenericAPIView):
+  serializer_class = SetNewPasswordSerializer
   
   def get(self, request, uidb64, token):
     try:
