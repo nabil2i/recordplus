@@ -118,32 +118,10 @@ class LogoutSerializer(serializers.Serializer):
   
 class PasswordResetSerializer(serializers.Serializer):
   email = serializers.EmailField(min_length=2)
+  redirect_url = serializers.CharField(min_length=0, max_length=50, required=False)
   
   class Meta:
     fields = ['email']
-
-  def validate(self, attrs):
-    
-    email = attrs['data'].get('email', '')
-    # user = User.objects.filter(email=email)
-    # if user.exists():
-    #   uidb64 = urlsafe_base64_encode(user.id)
-    #   token = PasswordResetTokenGenerator().make_token(user)
-      
-    #   current_domain = get_current_site(attrs['request']).domain
-    #   # current_domain = get_current_site(request=attrs['data'].get('request')).domain
-    #   relativeLink = reverse('confirm-password-reset', kwargs={'uidb64': uidb64, 'token': token})
-      
-    #   absolute_url = 'http://' + current_domain + relativeLink
-    #   email_body = 'Hello, \n User this link to reset your password \n' + absolute_url
-    #   data = {
-    #     'email_body': email_body,
-    #     'email_subject': 'Reset your password',
-    #     'to_email': user.email,
-    #   }
-    #   Util.send_email(data)
-      
-    return super().validate(attrs)
   
 
 class SetNewPasswordSerializer(serializers.Serializer):
