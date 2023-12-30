@@ -72,15 +72,15 @@ class LoginSerializer(serializers.ModelSerializer):
     email = attrs.get('email', '')
     password = attrs.get('password', '')
     filtered_user = User.objects.filter(email=email)
-    user = auth.authenticate(email=email, password=password)
     
     if filtered_user.exists() and filtered_user[0].auth_provider != 'email':
-      raise AuthenticationFailed(detail="Please Login using " + filtered_user[0].auth_provider)
+      raise AuthenticationFailed(detail="Please login using " + filtered_user[0].auth_provider)
     
     ## debugging
     # import pdb
     # pdb.set_trace()
     
+    user = auth.authenticate(email=email, password=password)
     if not user:
       raise AuthenticationFailed('Invalid credentials.')
     

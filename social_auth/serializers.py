@@ -1,16 +1,18 @@
-from rest_framework import serializers
-from . import google, facebook, twitterhelper
 from decouple import config
+from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+
+from . import facebook, google, twitterhelper
 from .register import register_social_user
+
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
   auth_token = serializers.CharField()
   
-  def validate_auth_token(sekf, auth_token):
+  def validate_auth_token(self, auth_token):
     user_data = google.Google.validate(auth_token)
     try:
-      user_data['sub'] # the ID
+      user_data['sub']
     except:
       raise serializers.ValidationError('The token is invalid or is expired.')
     

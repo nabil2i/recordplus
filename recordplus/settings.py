@@ -79,7 +79,7 @@ INSTALLED_APPS = [
     # my apps
     'core',
     'record',
-    # 'social_auth'
+    'social_auth'
     
 ]
 
