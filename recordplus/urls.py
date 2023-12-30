@@ -45,8 +45,10 @@ urlpatterns = [
     
     ## allauth authentication
     # path('accounts/', include('allauth.urls')),
-    # path('auth/', include('djoser.urls')),
-    # path('auth/', include('djoser.urls.jwt')),
+    
+    ## djoser authentication
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
     
     ## standard authentication
     path('api/auth/', include('core.urls')),
