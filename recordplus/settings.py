@@ -80,7 +80,7 @@ INSTALLED_APPS = [
     # my apps
     'core',
     'record',
-    'social_auth'
+    # 'social_auth'
     
 ]
 
@@ -202,28 +202,30 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWS_ORIGINS = [
-    "http://34.207.165.115/",
-    "https://recordplus.onrender.com/",
-    "http:127.0.0.1:8000/"
-]
 
-CORS_ALLOW_METHODS = [
-    "GET",
-    "POST",
-    # "PUT",
-    "PATCH",
-    # "DELETE",
-    "OPTIONS",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://34.207.165.115/",
+#     "https://recordplus.onrender.com/",
+#     "http://127.0.0.1:8000/",
+#     "http://localhost:5173/"
+# ]
 
-CORS_ALLOW_HEADERS = [
-    "Accept",
-    "Content-Type",
-    "Authorization",
-]
+# CORS_ALLOW_METHODS = [
+#     "GET",
+#     "POST",
+#     "PUT",
+#     "PATCH",
+#     "DELETE",
+#     "OPTIONS",
+# ]
 
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_HEADERS = [
+#     "Accept",
+#     "Content-Type",
+#     "Authorization",
+# ]
+
+# CORS_ALLOW_CREDENTIALS = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
