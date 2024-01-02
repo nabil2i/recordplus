@@ -3,12 +3,9 @@ The project is a REST API using python django to consume endpoints by a google c
 
 Video formats supported: `mp4, webm, avi`
 ## Use the API
-It is deployed at [http://34.207.165.115/api/record/](http://34.207.165.115/api/record/)
-<!-- 
-It is deployed at [https://recordplus.onrender.com/api/record/](https://recordplus.onrender.com/api/record/) -->
-
+Base local URL
 ```
-BASE URL: http://34.207.165.115/api/record
+BASE URL: http://127.0.0.1:8000/api/v1/record 
 ```
 
 ## videos
