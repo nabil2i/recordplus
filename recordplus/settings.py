@@ -42,7 +42,7 @@ openai.api_key = config('OPENAI_API_KEY')
 # DEBUG = True
 DEBUG = config('DEBUG', default='False')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'recordplus.onrender.com']
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -203,13 +203,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://34.207.165.115/",
-    "https://recordplus.onrender.com/",
-    "http://127.0.0.1:8000/",
-    "http://localhost:5173/",
-    "recordplus.onrender.com"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://34.207.165.115/",
+#     "https://recordplus.onrender.com/",
+#     "http://127.0.0.1:8000/",
+#     "http://localhost:5173/",
+# ]
 
 # CORS_ALLOW_METHODS = [
 #     "GET",
