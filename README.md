@@ -8,6 +8,11 @@ Base local URL
 BASE URL: http://127.0.0.1:8000/api/v1/record 
 ```
 
+Deplyed URL
+```
+BASE URL: https://recordplus.onrender.com/api/v1/record 
+```
+
 ## videos
 
 1. Upload a video
