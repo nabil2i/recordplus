@@ -58,7 +58,7 @@ urlpatterns = [
     path(f'api/{api_version}/record/', include('record.urls')),
     
     ## swagger
-    path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('swagger', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     # path(f'api/{api_version}/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path(f'api/{api_version}/swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path(f'api/{api_version}/api.json/', schema_view.without_ui(cache_timeout=0), name='schema-swagger-ui'),
@@ -69,5 +69,5 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
                           document_root=settings.MEDIA_ROOT)
 
-## for frontend urls
-# urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='home.html'))]
+# # for frontend urls
+# urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]
