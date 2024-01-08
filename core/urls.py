@@ -3,10 +3,11 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (LoginView, LogoutView, PasswordTokenCheckView,
                     RegisterView, RequestPasswordResetView, SetNewPasswordView,
-                    VerifyEmailView)
+                    VerifyEmailView, GoogleView)
 
 urlpatterns = [
   # path('', home, name="mylogin"),
+  path('google/callback/', GoogleView.as_view(), name="google"),
   path('register/', RegisterView.as_view(), name="register"),
   path('verify-email/', VerifyEmailView.as_view(), name="verify-email"),
   path('token/refresh/', TokenRefreshView.as_view(), name="refresh-token"),

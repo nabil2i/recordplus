@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+  </head>
+  <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.5/axios.min.js"></script>
+    <script>
+      function redirectToClient(success_redirect_uri) {
+        window.location.replace(`${success_redirect_uri}/login/`);
+      }
+      function getFormBody(details) {
+        return Object.keys(details).map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(details[key])).join('&');
+      }
+      try {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+        const redirect_uri = "{{redirect_uri|safe}}";
+        const success_redirect_uri = "{{success_redirect_uri|safe}}";
+        if (params.flag === "google") {
+          axios
+            .get(`/auth/o/google-oauth2/?redirect_uri=${redirect_uri}/api/auth/google/callback/`)
+            .then((res) => {
+              window.location.replace(res.data.authorization_url);
+            })
+            .catch((error) => {
+              redirectToClient(success_redirect_uri);  
+            })
+        } else if (params.state && params.code && !params.flag) {
+          const details = {
+            'state': params.state,
+            'code': params.code
+          }
+          const formBody = getFormBody(details);
+
+          axios
+            .post(`/auth/o/google-oauth2/?${formBody}`)
+            .then((res) => {
+              const formBody = getFormBody(res.data);
+              window.location.replace(`${success_redirect_uri}/google/callback/?${formBody}`);
+            })
+            .catch((error) => {
+              redirectToClient(success_redirect_uri);
+            })
+        } else {
+          redirectToClient(success_redirect_uri);
+        }
+      } catch (error) {
+        console.log(error)
+        redirectToClient(success_redirect_uri);
+      }
+    </script>
+  </body>
+</html>

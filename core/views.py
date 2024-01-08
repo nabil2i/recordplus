@@ -26,8 +26,22 @@ from .serializers import (EmailVerificationSerializer, LoginSerializer,
                           LogoutSerializer, PasswordResetSerializer,
                           RegisterSerializer, SetNewPasswordSerializer)
 from .utils import Util
+from django.views.generic import TemplateView
 
 
+class GoogleView(TemplateView):
+  permission_classes = []
+  template_name = 'google.html'
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context["redirect_uri"] = "{}://{}".format(
+      settings.SOCIAL_AUTH_PROTOCOL, settings.SOCIAL_AUTH_DOMAIN) 
+    context["success_redirect_uri"] = "{}://{}".format(
+      settings.PASSWORD_RESET_PROTOCOL, settings.PASSWORD_RESET_DOMAIN) 
+    return context 
+  
+  
 class CustomRedirect(HttpResponsePermanentRedirect):
   
   allowed_schemes = [config('APP_SCHEME'), 'http', 'https']

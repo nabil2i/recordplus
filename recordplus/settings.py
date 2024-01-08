@@ -60,13 +60,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # 3rd party apps
+    'corsheaders',
+    'drf_yasg',
+    'whitenoise.runserver_nostatic',
+    
+    'djoser',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'djoser',
-    'corsheaders',
-    'whitenoise.runserver_nostatic',
-    'drf_yasg',
+    'social_django',
     
     # # all auth
     # 'django.contrib.sites',
@@ -84,6 +86,8 @@ INSTALLED_APPS = [
     # 'social_auth'
     
 ]
+
+
 
 # SOCIALACCOUNT_LOGIN_ON_GET=True # skip one page when authenticating
 
@@ -126,6 +130,7 @@ INSTALLED_APPS = [
 # }
 
 MIDDLEWARE = [
+    'social_django.middleware.SocialAuthExceptionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -154,6 +159,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect'
             ],
         },
     },
@@ -278,6 +285,9 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ALGORITHM': 'HS256',
+    'AUTH_TOKEN_CLASSES': (
+        'rest_framework_simplejwt.tokens.AccessToken',
+    )
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -293,6 +303,9 @@ AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
 
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    
     ## `allauth` specific authentication methods, such as login by email
     # 'allauth.account.auth_backends.AuthenticationBackend',
     
@@ -310,7 +323,24 @@ SWAGGER_SETTINGS = {
 
 SITE_NAME = 'Record Plus'
 DOMAIN = 'localhost:5173'
+
+SOCIAL_AUTH_PROTOCOL = 'http'
+SOCIAL_AUTH_DOMAIN = '127.0.0.1:8000'
+PASSWORD_RESET_PROTOCOL = 'http'
+PASSWORD_RESET_DOMAIN = '127.0.0.1:5173'
     
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_CLIENT_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email', 'openid', 'https://www.googleapis.com/auth/userinfo.profile']
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+
+SOCIAL_AUTH_FACEBOOK_KEY = config('FACEBOOK_APP_ID')
+SOCIAL_AUTH_FACEBOOK_SECRET = config('FACEBOOK_APP_SECRET')
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'email, first_name, last_name'
+}
+
 DJOSER = {
     'LOGIN_FIELD': 'email',
     # 'DOMAIN': config('FRONTEND_URL'),
@@ -324,9 +354,18 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     'SET_USERNAME_RETYPE': True,
     'SET_PASSWORD_RETYPE': True,
+    'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': [
+        'http://127.0.0.1:8000/google/callback',
+        'http://127.0.0.1:5173/google/callback',
+        'http://127.0.0.1:8000/api/auth/google/callback/',
+        'http://127.0.0.1:5173/facebook',
+        # 'http://localhost:8000/api/auth/google/callback/',
+    ],
     'SERIALIZERS': {
         'user_create': 'core.serializers.UserCreateSerializer',  
         'user': 'core.serializers.UserCreateSerializer',  
+        'current_user': 'core.serializers.UserCreateSerializer',  
         'user_delete': 'core.serializers.UserDeleteSerializer',  
     },
 }

@@ -49,9 +49,10 @@ urlpatterns = [
     ## djoser authentication
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    path('auth/', include('djoser.social.urls')),
     
     ## standard authentication
-    # path('api/auth/', include('core.urls')),
+    path('api/auth/', include('core.urls')),
     # path(f'api/social_auth/', include(('social_auth.urls', 'social_auth'), namespace="social-auth")),
     
     ## record api
